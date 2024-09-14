@@ -1,0 +1,19 @@
+[project]
+name = "viewset_scenarios"
+version = "0.1.0"
+description = "Package for DRF that acts as a wrapper on any ViewSet in order to manage different serializers and paginators based on defined rules."
+authors = [
+    {name = "Jancel", email = "ja.alvarezgom@gmail.com"},
+]
+dependencies = []
+requires-python = ">=3.12"
+readme = "README.md"
+license = {text = "MIT"}
+
+[build-system]
+requires = ["pdm-backend"]
+build-backend = "pdm.backend"
+
+
+[tool.pdm]
+distribution = true
