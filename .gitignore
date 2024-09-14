@@ -1,6 +1,7 @@
 # Custom
 .pdm-python
 .idea
+pdm.lock
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
