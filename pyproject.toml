@@ -1,21 +1,46 @@
 [project]
-name = "viewset_scenarios"
-version = "0.1.0"
-description = "Package for DRF that acts as a wrapper on any ViewSet in order to manage different serializers and paginators based on defined rules."
+name = "drf-viewset-scenarios"
+version = "1.0.0"
+description = "A Django REST Framework package that provides a flexible way to manage different serializers and paginators in your ViewSets based on defined scenarios."
 authors = [
     {name = "Jancel", email = "ja.alvarezgom@gmail.com"},
 ]
 dependencies = [
     "djangorestframework>=3.15.2",
 ]
-requires-python = ">=3.12"
+requires-python = ">=3.10"
 readme = "README.md"
 license = {text = "MIT"}
+classifiers = [
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Development Status :: 5 - Production/Stable",
+    "Topic :: Software Development :: Libraries :: Python Modules",
+    "Topic :: Software Development :: Libraries :: Application Frameworks",
+    "Topic :: Software Development :: Libraries",
+    "Topic :: Software Development",
+    "Topic :: Utilities",
+    "Typing :: Typed",
+]
+
+[dependency-groups]
+dev = [
+    "ruff>=0.9.4",
+]
+
+[project.urls]
+Homepage = "https://github.com/jalvarezgom/drf-viewset-scenarios"
+Issues = "https://github.com/jalvarezgom/drf-viewset-scenarios/issues"
+
 
 [build-system]
 requires = ["pdm-backend"]
 build-backend = "pdm.backend"
 
-
 [tool.pdm]
 distribution = true
+
+[tool.pdm.scripts]
+gen_req = "pdm export -o requirements.txt --without-hashes"
+lint.composite = ["ruff check --fix", "ruff format"]

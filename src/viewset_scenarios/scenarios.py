@@ -2,7 +2,10 @@ from rest_framework.pagination import PageNumberPagination
 from rest_framework.serializers import Serializer
 
 from src.viewset_scenarios.action_type import DRFActionType
-from src.viewset_scenarios.exceptions import ViewSetScenarioNotFound, ViewSetScenarioException
+from src.viewset_scenarios.exceptions import (
+    ViewSetScenarioNotFound,
+    ViewSetScenarioException,
+)
 
 
 class DRFScenario:
@@ -19,21 +22,42 @@ class DRFScenario:
             raise ViewSetScenarioException("Serializer must be a Serializer class")
         self.serializer = serializer
         if pagination is not None and not isinstance(pagination, PageNumberPagination):
-            raise ViewSetScenarioException("Pagination must be a PageNumberPagination class or None")
+            raise ViewSetScenarioException(
+                "Pagination must be a PageNumberPagination class or None"
+            )
         self.pagination = pagination
+
+    def __repr__(self):
+        return f"{self.__class__.__name__}({self.action})"
 
 
 class DRFDirectorScenarios:
-    paginations = None
-    serializers = None
-    actions = None
+    _paginations = None
+    _serializers = None
+    _actions = None
 
     def __init__(self, drf_scenarios: list[DRFScenario] = []):
         if drf_scenarios:
             self.set_scenarios(drf_scenarios)
 
+    @property
+    def paginations(self):
+        return self._paginations
+
+    @property
+    def serializers(self):
+        return self._serializers
+
+    @property
+    def actions(self):
+        return self._actions
+
     def set_scenarios(self, scenarios):
-        serializer_scenarios_class, pagination_scenarios_class, action_scenarios_class = {}, {}, {}
+        (
+            serializer_scenarios_class,
+            pagination_scenarios_class,
+            action_scenarios_class,
+        ) = {}, {}, {}
         for sce in scenarios:
             serializer_scenarios_class[sce.action] = sce.serializer
             if sce.pagination:
@@ -44,26 +68,33 @@ class DRFDirectorScenarios:
         self.set_actions(action_scenarios_class)
 
     def get_action(self, action, request, *args, **kwargs):
-        for scenario, sce_condition in self.actions.items():
+        result = DRFActionType.DEFAULT
+        for scenario, sce_condition in self._actions.items():
             if sce_condition(action, request, scenario, *args, **kwargs):
-                return scenario
-        return DRFActionType.DEFAULT
+                result = scenario
+                break
+        return result
 
     def set_actions(self, actions):
-        self.actions = actions
+        self._actions = actions
 
     def get_pagination(self, scenario):
-        pagination_class = self.paginations.get(scenario, None)
+        pagination_class = self._paginations.get(scenario, None)
         return pagination_class
 
     def set_paginations(self, paginations):
-        self.paginations = paginations if paginations.keys() > 0 else None
+        self._paginations = paginations if len(paginations.keys()) > 0 else None
 
     def get_serializer(self, scenario, action):
-        serializer_class = self.serializers.get(scenario, None)
+        serializer_class = self._serializers.get(scenario, None)
         if serializer_class is None:
-            raise ViewSetScenarioNotFound(f"Action {action} - Serializer scenario '{scenario}' not found")
+            raise ViewSetScenarioNotFound(
+                f"Action {action} - Serializer scenario '{scenario}' not found"
+            )
         return serializer_class
 
     def set_serializers(self, serializers):
-        self.serializers = serializers
+        self._serializers = serializers
+
+    def __repr__(self):
+        return f"{self.__class__.__name__}(actions=[{', '.join(self._actions.keys())}])"
